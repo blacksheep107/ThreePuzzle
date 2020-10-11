@@ -3,6 +3,7 @@ package ImagUtil;
 import javax.swing.*;
 
 import java.awt.*;
+import java.awt.image.BufferedImage;
 
 public class CutImageTest extends JFrame {
     private static final long serialVersionUID = 1140239462766935667L;
@@ -10,7 +11,7 @@ public class CutImageTest extends JFrame {
     private Image[][] images;
 
     public CutImageTest() {
-        Image image = Toolkit.getDefaultToolkit().getImage("problem.jpg");
+        BufferedImage image = ImageToBufferedImage.toBufferedImage(Toolkit.getDefaultToolkit().getImage("problem.jpg"));
         new ImageIcon(image).getImage();
         setSize(image.getWidth(null), image.getHeight(null));
         setLocationRelativeTo(null);
@@ -21,11 +22,7 @@ public class CutImageTest extends JFrame {
         // 获取源图像
 
         // 分割图像
-        images = CutImage.cutImage(image, 3, 3, 0, 0,
-                image.getWidth(null)/3,
-                image.getHeight(null)/3,
-                image.getWidth(null)/3,
-                image.getHeight(null)/3, this);
+        //images = CutImage.cutImage(image);
         int index = 0;
         // 将所有分割得到的图像添加到MediaTracker追踪列表中
         for (Image[] images2 : images) {

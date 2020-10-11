@@ -1,28 +1,28 @@
 package ImagUtil;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.awt.image.CropImageFilter;
 import java.awt.image.FilteredImageSource;
 import java.awt.image.ImageFilter;
+import java.io.File;
+import java.io.IOException;
 
-public class CutImage extends JFrame {
+public class CutImage {
     //private static final long serialVersionUID = 1140239462766935667L;
     //private MediaTracker mediaTracker;
-    public Image[][] images;//分割后的图像
+    public BufferedImage[][] images=new BufferedImage[3][3];//分割后的图像
     /**
      * 设置切割图片的参数
      */
-    public void cutSetting(String filename){
+    public void cutSetting(String filename) {
         //获取源图像
         Image image = Toolkit.getDefaultToolkit().getImage(filename);
-        new ImageIcon(image).getImage();
+        //new ImageIcon(image).getImage();
         // 分割图像
-        images = CutImage.cutImage(image, 3, 3, 0, 0,
-                image.getWidth(null)/3,
-                image.getHeight(null)/3,
-                image.getWidth(null)/3,
-                image.getHeight(null)/3, this);
+        images=CutImage.cutImage(ImageToBufferedImage.toBufferedImage(image));
 
 
         /*setSize(image.getWidth(null), image.getHeight(null));
@@ -43,45 +43,24 @@ public class CutImage extends JFrame {
         setVisible(true);*/
 
     }
-    /**
-     * 分割图像
-     *
-     * @param image
-     *            传入的图片对象
-     * @param rows
-     *            垂直方向上需要裁剪出的图片数量 - 行
-     * @param cols
-     *            水平方向上需要裁剪出的图片数量 - 列
-     * @param x
-     *            开始裁剪位置的X坐标
-     * @param y
-     *            开始裁剪位置的Y坐标
-     * @param width
-     *            每次裁剪的图片宽度
-     * @param height
-     *            每次裁剪的图片高度
-     * @param changeX
-     *            每次需要改变的X坐标数量
-     * @param changeY
-     *            每次需要改变的Y坐标数量
-     * @param component
-     *            容器对象，目的是用来创建裁剪后的每个图片对象
-     * @return 裁剪完并加载到内存后的二维图片数组
-     */
-    public static Image[][] cutImage(Image image, int rows, int cols, int x,
-                                     int y, int width, int height, int changeX, int changeY,
-                                     Component component) {
-        Image[][] images = new Image[rows][cols];
-        for (int i = 0; i < rows; i++) {
+
+    public static BufferedImage[][] cutImage(BufferedImage image){
+        BufferedImage[][] images=new BufferedImage[3][3];
+        for(int i=0;i<3;i++){
+            for(int j=0;j<3;j++){
+                images[i][j]=image.getSubimage(j*300,i*300,300,300);
+            }
+        }
+        return images;
+        /*for (int i = 0; i < rows; i++) {
             for (int j = 0; j < cols; j++) {
                 ImageFilter filter = new CropImageFilter(x + j * changeX, y + i
                         * changeY, width, height);
                 images[i][j] = component.createImage(new FilteredImageSource(
                         image.getSource(), filter));
             }
-        }
+        }*/
 
-        return images;
     }
     /*@Override
     public void paint(Graphics g) {

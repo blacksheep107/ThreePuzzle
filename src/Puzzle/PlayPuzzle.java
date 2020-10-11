@@ -17,6 +17,17 @@ public class PlayPuzzle {
             {0, -1, 6, 4}, {1, 3, 7, 5}, {2, 4, 8, -1},
             {3, -1, -1, 7}, {4, 6, -1, 8}, {5, 7, -1, -1}
     };
+    /**
+     * 牌号到目标位置的曼哈顿距离
+     */
+    private static final int[][] STEPTODES=new int[][]{
+            {0,0,0,0,0,0,0,0,0},{0,1,2,1,2,3,2,3,4},
+            {1,0,1,2,1,2,3,2,3},{2,1,0,3,2,1,4,3,2},
+            {1,2,3,0,1,2,1,2,3},{2,1,2,1,0,1,2,1,2},
+            {3,2,1,2,1,0,3,2,1},{2,3,4,1,2,3,0,1,2},
+            {3,2,3,2,1,2,1,0,1},{4,3,2,3,2,1,2,1,0}
+
+    };
     //状态是否出现过
     private Map<Integer, Boolean>mymap=new HashMap<Integer,Boolean>();
     //优先队列，存储状态，每次取估价值最大的状态
@@ -49,12 +60,9 @@ public class PlayPuzzle {
             setCost();
         }
         void setCost(){
-            String a;
-            int c=0;
-            a=String.format("%09d",num);
-            for(int i=0;i<9;i++)
-                if(a.charAt(i)!=brr.charAt(i)) c++;//不在位的块数
-            cost=c+step;//估价为块数加步数
+            String a=String.format("%09d",num);
+            cost=step;//估价为深度+理想到达步数
+            for(int i=0;i<9;i++) cost+=STEPTODES[a.charAt(i)-'0'][i];
         }
 
         @Override
@@ -111,10 +119,7 @@ public class PlayPuzzle {
                 //System.out.println("After ForceSwap:"+arr);
                 if(!haveAnswer()){//强制交换无解
                     best=makeBestExchange();//找自由交换的最好方案
-                    int x=best[0]+1;int y=best[1]+1;
-                    //System.out.println("freeSwap:"+x+" "+y);
-                    arr=swap(arr.toCharArray(),x-1,y-1);
-                    //System.out.println("After freeSwap:"+arr);
+                    arr=swap(arr.toCharArray(),best[0], best[1]);
                 }
                 if(arr.equals(brr)){//交换后为目标状态
                     route.put(des,-1);
@@ -282,7 +287,7 @@ public class PlayPuzzle {
                     insertzero+="0";
                     insertzero+=temp.substring(zero);
                     for(int k=0;k<9;k++){//计算在位的块数
-                        if(insertzero.charAt(k)==brr.charAt(k)) c++;
+                        c+=STEPTODES[insertzero.charAt(k)-'0'][k];
                     }
                     //System.out.println("insertZero="+insertzero+" "+"brr="+brr+" "+"c="+c);
                     if(c>max) {//更合适的交换位置
