@@ -21,11 +21,11 @@ public class PlayPuzzle {
      * 牌号到目标位置的曼哈顿距离
      */
     private static final int[][] STEPTODES=new int[][]{
-            {0,0,0,0,0,0,0,0,0},{0,1,2,1,2,3,2,3,4},
-            {1,0,1,2,1,2,3,2,3},{2,1,0,3,2,1,4,3,2},
-            {1,2,3,0,1,2,1,2,3},{2,1,2,1,0,1,2,1,2},
-            {3,2,1,2,1,0,3,2,1},{2,3,4,1,2,3,0,1,2},
-            {3,2,3,2,1,2,1,0,1},{4,3,2,3,2,1,2,1,0}
+            {0,0,0,0,0,0,0,0,0,0},{0,0,1,2,1,2,3,2,3,4},
+            {0,1,0,1,2,1,2,3,2,3},{0,2,1,0,3,2,1,4,3,2},
+            {0,1,2,3,0,1,2,1,2,3},{0,2,1,2,1,0,1,2,1,2},
+            {0,3,2,1,2,1,0,3,2,1},{0,2,3,4,1,2,3,0,1,2},
+            {0,3,2,3,2,1,2,1,0,1},{0,4,3,2,3,2,1,2,1,0}
 
     };
     //状态是否出现过
@@ -60,9 +60,13 @@ public class PlayPuzzle {
             setCost();
         }
         void setCost(){
-            String a=String.format("%09d",num);
-            cost=step;//估价为深度+理想到达步数
-            for(int i=0;i<9;i++) cost+=STEPTODES[a.charAt(i)-'0'][i];
+            cost=step;
+            int t=num,tdes=des,i=8;
+            while(t!=0){
+                cost+=STEPTODES[t%10][tdes%10];
+                t/=10;
+                tdes/=10;
+            }
         }
 
         @Override
@@ -93,7 +97,6 @@ public class PlayPuzzle {
      */
     public  int bfsHash(int start, int zeroPos){
         special_add=0;
-        String temp;
         char op='f';//开始节点没有操作状态
         int pastnum=start;
         Node tempN=new Node(start,0,zeroPos,op);//为开始状态创建节点
@@ -145,9 +148,15 @@ public class PlayPuzzle {
                 continue;
             }
 
-            temp = String.format("%09d", tempN.num);//方便交换处理
+            //temp = String.format("%09d", tempN.num);//方便交换处理
+            String temp="";
             int pos = tempN.zeroPos, num;
-            pastnum=Integer.parseInt(temp);//正要进行交换
+            if(pos==0){
+                temp+="0";
+            }
+            Integer s=tempN.num;
+            temp+=s.toString();
+            pastnum= tempN.num;//正要进行交换
             for (int i = 0; i < 4; i++) {
                 if (changeId[pos][i] != -1) {//可以向该方向移动
                     temp=swap(temp.toCharArray(), pos, changeId[pos][i]);//移动
