@@ -20,7 +20,9 @@ public class LearnSth {
     public static void main(String[] args) throws IOException {
         int[] mat={0,9,6,7,2,5,4,0,1,3};
         JSONAnalysis.step=20;
-
+        JSONAnalysis.swap=new ArrayList<>();
+        JSONAnalysis.swap.add(1);
+        JSONAnalysis.swap.add(2);
         new PlayPuzzle().playPuzzle(mat);
     }
 }

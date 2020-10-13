@@ -101,6 +101,21 @@ public class PlayPuzzle {
      * @return 步数
      */
     public  int bfsHash(int start, int zeroPos){
+        /**
+         * 初始无解
+         */
+        int[] changenum=new int[2];
+        changenum[0]=-1;
+        Integer st=start;
+        String str=st.toString();
+        if(str.length()<9)  str="0"+str;
+        if(!haveAnswer(str)){
+            changenum=makeBestExchange(str);
+            start=Integer.parseInt(swap(str.toCharArray(),changenum[0],changenum[1]));
+            changenum[0]=str.charAt(changenum[0]);
+            changenum[1]=str.charAt(changenum[1]);
+            System.out.println(changenum[0]+" "+changenum[1]);
+        }
         special_add=0;
         char op='f';//开始节点没有操作状态
         int pastnum=start;
@@ -117,16 +132,25 @@ public class PlayPuzzle {
             if(JSONAnalysis.step==tempN.step){//步数从0开始算
                 JSONAnalysis.step=-1;//保证只进行一次强制交换
                 findRoute(tempN.num);//记录前半段路径
-
                 arr=Integer.toString(tempN.num);
                 if(arr.length()<9)  arr="0"+arr;//空格在最前时
-                //System.out.println("Before ForceSwap:"+arr);
-                //TODO
-                //arr=swap(arr.toCharArray(),4,8);
+                if(changenum[0]!=-1){
+                    //之前欺骗过，换回
+                    int i=0,j=0;
+                    for(int k=0;k<9;k++){
+                        if(changenum[0]==arr.charAt(k)){
+                            i=k;
+                        }
+                        if(changenum[1]==arr.charAt(k)){
+                            j=k;
+                        }
+                    }
+                    arr=swap(arr.toCharArray(),i,j);
+                    changenum[0]=-1;//换回去了
+                }
                 arr=swap(arr.toCharArray(),JSONAnalysis.swap.get(0)-1,JSONAnalysis.swap.get(1)-1);
-                //System.out.println("After ForceSwap:"+arr);
-                if(!haveAnswer()){//强制交换无解
-                    best=makeBestExchange();//找自由交换的最好方案
+                if(!haveAnswer(arr)){//强制交换无解
+                    best=makeBestExchange(arr);//找自由交换的最好方案
                     arr=swap(arr.toCharArray(),best[0], best[1]);
                 }
                 if(arr.equals(brr)){//交换后为目标状态
@@ -167,6 +191,21 @@ public class PlayPuzzle {
                     temp=swap(temp.toCharArray(), pos, changeId[pos][i]);//移动
                     num = Integer.parseInt(temp);//移动后的状态
                     if (num==des){//到达目标状态
+                        /*if(changenum[0]!=-1){
+                            int si=0,sj=0;
+                            for(int k=0;k<9;k++){
+                                if(changenum[0]==temp.charAt(k)){
+                                    si=k;
+                                }
+                                if(changenum[1]==temp.charAt(k)){
+                                    sj=k;
+                                }
+                            }
+                            temp=swap(temp.toCharArray(),si,sj);
+                            changenum[0]=-1;
+                            temp=swap(temp.toCharArray(), pos, changeId[pos][i]);
+                            continue;
+                        }*/
                         route.put(des,pastnum);
                         operation_to_the_state.put(des,dis[i]);
                         return tempN.step + 1;//步数
@@ -254,12 +293,12 @@ public class PlayPuzzle {
     /**
      * 是否有解,arr,brr
      */
-    public boolean haveAnswer(){
+    public boolean haveAnswer(String s){
         int[] d1=new int[8];//逆序对数组
         int index1=0;
         for(int i=0;i<9;i++){
-            if(arr.charAt(i)!='0'){
-                d1[index1++]=arr.charAt(i)-'0';
+            if(s.charAt(i)!='0'){
+                d1[index1++]=s.charAt(i)-'0';
             }
         }
         if(getInversion(d1)%2!=0)  return false;//逆序对奇偶不同则无解，目标逆序对数一定为0
@@ -279,40 +318,45 @@ public class PlayPuzzle {
         return cnt;
     }
     /**
-     * 只能交换中间隔0,2,4,6，找出最好交换策略
-     * 0有7种，2有5种，4有3种，6有1种
-     * 策略：计算每种交换后状态的估价函数
+     * 交换后是否有解，可以交换空格
+     * 策略：曼哈顿距离最小，不在位块数最小，
      */
-    public int[] makeBestExchange(){
-        int[] theBestMethod=new int[2];
-        int max=-1,zero=0;
-        String arrn="";
+    public int Manhatton(String s){
+        int c = 0;
         for(int i=0;i<9;i++){
-            if(arr.charAt(i)!='0')  arrn+=arr.charAt(i);
-            else    zero=i;
+            c+=STEPTODES[s.charAt(i)-'0'][i+1];
         }
-        //arrn共8个数，无0
-        for(int i=0;i<7;i++){
-            for(int j=i+1;j<8;j++){
-                if(j-i==1||j-i==3||j-i==5||j-i==7){//可以交换
-                    int c=0;
-                    String temp=swap(arrn.toCharArray(),i,j);
-                    String insertzero=temp.substring(0,zero);//插入0
-                    insertzero+="0";
-                    insertzero+=temp.substring(zero);
-                    for(int k=0;k<9;k++){//计算在位的块数
-                        c+=STEPTODES[insertzero.charAt(k)-'0'][k];
-                    }
-                    //System.out.println("insertZero="+insertzero+" "+"brr="+brr+" "+"c="+c);
-                    if(c>max) {//更合适的交换位置
-                        max=c;
-                        theBestMethod[0]=i;
-                        theBestMethod[1]=j;
-                        if(i>=zero){//i在前，若0在更前面，两个位置都往后推一位
-                            theBestMethod[0]++;
-                            theBestMethod[1]++;
-                        }else if(j>=zero){//0只在j前面
-                            theBestMethod[1]++;
+        return c;
+    }
+
+    /**
+     * @param s
+     * @return 在为数
+     */
+    public int numOfinSite(String s){
+        int c=0;
+        for(int i=0;i<9;i++){
+            if(s.charAt(i)==brr.charAt(i)) c++;
+        }
+        return c;
+    }
+    public int[] makeBestExchange(String s){
+        int[] theBestMethod=new int[2];
+        String temp="";
+        int min=100,max=0;
+        for(int i=0;i<8;i++){
+            for(int j=i+1;j<9;j++){
+                temp=swap(s.toCharArray(),i,j);
+                if(haveAnswer(temp)){
+                    int c=Manhatton(temp);
+                    if(c<min){
+                        min=c;
+                        theBestMethod[0]=i;theBestMethod[1]=j;
+                    }else if(c==min){
+                        int t=numOfinSite(temp);
+                        if(t>max){
+                            max=t;
+                            theBestMethod[0]=i;theBestMethod[1]=j;
                         }
                     }
                 }

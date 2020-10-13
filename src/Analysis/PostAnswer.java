@@ -14,7 +14,7 @@ import com.alibaba.fastjson.JSONObject;
 
 public class PostAnswer {
     private static String request="{\"teamid\": 12,\"token\": \"ea091bf6-9d3b-4cc2-9b43-2b72fff9726d\"}";
-    private static String challenge_uuid="faffa1cf-b298-452b-b469-d48f8ddf57a0";
+    private static String challenge_uuid="1a715257-df36-4c79-a502-1e70d16d54e8";
     private static String ans="{\"uuid\":\""+JSONAnalysis.uuid+"\",\"answer\":{\"operations\": \""
             +PlayPuzzle.getop+"\",\"swap\": [";
 
