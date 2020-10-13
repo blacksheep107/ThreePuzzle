@@ -1,8 +1,10 @@
 package Puzzle;
 import Analysis.JSONAnalysis;
 import Analysis.PostAnswer;
+import Analysis.URLAnalysis;
 import ImagUtil.CmpImage;
 import ImagUtil.ImageToMat;
+import com.alibaba.fastjson.JSONObject;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -10,15 +12,15 @@ import java.io.*;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.http.HttpRequest;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 public class LearnSth {
     public static void main(String[] args) throws IOException {
-        PlayPuzzle p=new PlayPuzzle();
-        int[] n={0,4,2,3,8,5,0,1,6,7};
-        JSONAnalysis.step=9;
+        int[] mat={0,9,6,7,2,5,4,0,1,3};
+        JSONAnalysis.step=20;
 
-        p.playPuzzle(n);
+        new PlayPuzzle().playPuzzle(mat);
     }
 }

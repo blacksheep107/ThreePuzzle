@@ -61,17 +61,22 @@ public class PlayPuzzle {
         }
         void setCost(){
             cost=step;
-            int t=num,tdes=des,i=8;
+            /*int t=num,tdes=des,i=8;
             while(t!=0){
-                cost+=STEPTODES[t%10][tdes%10];
+                if(t%10==tdes%10)   cost++;
                 t/=10;
                 tdes/=10;
+            }*/
+            int t=num,i=9;
+            while(t!=0){
+                cost+=STEPTODES[t%10][i--];
+                t/=10;
             }
         }
 
         @Override
         public int compareTo(Node o) {
-            return cost-o.cost;//优先队列排序按估价值大的在前
+            return cost-o.cost;
         }
     }
 
@@ -219,7 +224,7 @@ public class PlayPuzzle {
         findRoute(des);//找路径
         for(int i=0;i< op.size();i++)    getop+=op.get(i);
         if(special_add==1)  getop+='w';
-        System.out.println(getop);
+        //System.out.println(getop);
     }
     /**
      * 找路径
@@ -243,8 +248,8 @@ public class PlayPuzzle {
             op.setElementAt(temp,op.size()-i-1+pastsize);
         }
         //System.out.print("Reverse:");
-        //for(int i=pastsize;i<op.size();i++) System.out.print(op.get(i));
-        //System.out.println();
+        for(int i=pastsize;i<op.size();i++) System.out.print(op.get(i));
+        System.out.println();
     }
     /**
      * 是否有解,arr,brr

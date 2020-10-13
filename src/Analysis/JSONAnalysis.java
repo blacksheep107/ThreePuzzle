@@ -1,5 +1,7 @@
 package Analysis;
 
+import Puzzle.Competition;
+import Puzzle.Main;
 import com.alibaba.fastjson.JSONObject;
 
 import java.io.IOException;
@@ -14,14 +16,23 @@ public class JSONAnalysis {
 
     public void jsonAnalysis() throws IOException {
         String jsonString=new URLAnalysis().urlAnalysis();//调用URLAnalysis，获得json字符串
-        Map<String,Object> map = JSONObject.parseObject(jsonString, Map.class);
-        img=map.get("img").toString();
-        uuid=map.get("uuid").toString();
-        step=Integer.parseInt(map.get("step").toString());
-        String jsonStr = JSONObject.toJSONString(map.get("swap"));
-        swap=JSONObject.parseArray(jsonStr, Integer.class);
+        JSONObject map=JSONObject.parseObject(jsonString);
+        img=map.getString("img");
+        uuid=map.getString("uuid");
+        step=Integer.parseInt(map.getString("step"));
+        swap=JSONObject.parseArray(map.getString("swap"), Integer.class);
         System.out.println("forceStep:"+step);
         System.out.println("forceSwap:"+swap.get(0)+" "+swap.get(1));
-        System.out.println("uuid:"+uuid);
+    }
+    public void jsonAnalysisInCompetiton() throws IOException {
+        String jsonString= Competition.po.requestPuzzle();
+        JSONObject s=JSONObject.parseObject(jsonString);
+        JSONObject map=JSONObject.parseObject(String.valueOf(s.get("data")));
+        img=map.getString("img");
+        uuid=s.getString("uuid");
+        step=map.getInteger("step");
+        swap=JSONObject.parseArray(map.getString("swap"), Integer.class);
+        System.out.println("forceStep:"+step);
+        System.out.println("forceSwap:"+swap.get(0)+" "+swap.get(1));
     }
 }

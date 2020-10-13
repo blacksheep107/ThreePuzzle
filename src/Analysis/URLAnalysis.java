@@ -8,7 +8,6 @@ import java.net.URL;
 
 public class URLAnalysis {
     private String stuid="http://47.102.118.1:8089/api/problem?stuid=041803101";
-
     /**
      * 解析url，转为json字符串
      * @return

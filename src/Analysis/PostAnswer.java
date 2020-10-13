@@ -13,29 +13,50 @@ import com.alibaba.fastjson.JSONObject;
  */
 
 public class PostAnswer {
+    private static String request="{\"teamid\": 12,\"token\": \"ea091bf6-9d3b-4cc2-9b43-2b72fff9726d\"}";
+    private static String challenge_uuid="faffa1cf-b298-452b-b469-d48f8ddf57a0";
+    private static String ans="{\"uuid\":\""+JSONAnalysis.uuid+"\",\"answer\":{\"operations\": \""
+            +PlayPuzzle.getop+"\",\"swap\": [";
+
     public static JSONObject postAnswer() throws IOException {
-        String operations=PlayPuzzle.getop;
-        String ans="{\"uuid\":\"";
-        ans+=JSONAnalysis.uuid;
-        ans+="\",\"answer\":{\"operations\": \"";
-        ans+=operations;
-        ans+="\",\"swap\": [";
         if(PlayPuzzle.best==null){
             ans+="0,0]}}";
         }else{
-            PlayPuzzle.best[0]++;
-            PlayPuzzle.best[1]++;
-            ans+=PlayPuzzle.best[0];
+            ans+=PlayPuzzle.best[0]+1;
             ans+=",";
-            ans+=PlayPuzzle.best[1];
+            ans+=PlayPuzzle.best[1]+1;
             ans+="]}}";
         }
-        System.out.println();
         System.out.println(ans);
         //发送 POST 请求
         String sr = sendRequestManager("http://47.102.118.1:8089/api/answer",
                 ans);
         JSONObject js=JSONObject.parseObject(sr);
+        return js;
+    }
+    public static String requestPuzzle()throws IOException {
+        String sr = sendRequestManager("http://47.102.118.1:8089/api/challenge/start/"+challenge_uuid,
+                request);
+        return sr;
+    }
+    public static JSONObject postAnswerInCompetion() throws IOException {
+        String ansInCompetition="{\"uuid\":\""
+                +JSONAnalysis.uuid
+                +"\",\"teamid\": 12,\"token\": \"ea091bf6-9d3b-4cc2-9b43-2b72fff9726d\"," + "\"answer\":{\"operations\": \"" +PlayPuzzle.getop+"\",\"swap\": [";
+        if(PlayPuzzle.best==null){
+            ansInCompetition+="0,0]}}";
+        }else{
+            ansInCompetition+=PlayPuzzle.best[0]+1;
+            ansInCompetition+=",";
+            ansInCompetition+=PlayPuzzle.best[1]+1;
+            ansInCompetition+="]}}";
+        }
+        System.out.println(ansInCompetition);
+        //发送 POST 请求
+        String sr = sendRequestManager("http://47.102.118.1:8089/api/challenge/submit",
+                ansInCompetition);
+        JSONObject js=JSONObject.parseObject(sr);
+        System.out.println(js);
         return js;
     }
     public static String sendRequestManager(String url, String body) throws IOException {
@@ -57,7 +78,6 @@ public class PostAnswer {
         hc.setDoOutput(true);
 
         try {
-
             writer = new BufferedWriter(new OutputStreamWriter(hc.getOutputStream(), "UTF-8"));
             writer.write(body);
             writer.close();
@@ -100,7 +120,7 @@ public class PostAnswer {
         }
 
         result = sb.toString();
-        System.out.println(result);
+        //System.out.println(result);
         return result;
     }
 

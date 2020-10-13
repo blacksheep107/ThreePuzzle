@@ -10,9 +10,10 @@ import java.io.File;
 import java.io.IOException;
 
 public class ImageToMat extends Component {
-    BufferedImage[][] problem_images=new BufferedImage[3][3];//问题九宫格
-    Base64Util base=new Base64Util();
-    CutImage cut1=new CutImage();
+    public static BufferedImage[][] problem_images=new BufferedImage[3][3];//问题九宫格
+    public static Base64Util base=new Base64Util();
+    public static CutImage cut1=new CutImage();
+    public static BufferedImage one_of_problem;
     /**
      * 找目标图片
      */
@@ -21,7 +22,7 @@ public class ImageToMat extends Component {
 
         cut1.cutSetting("problem.jpg");
         problem_images = cut1.images;//分割图片
-        BufferedImage one_of_problem = problem_images[0][0];//取分割后图片的第一张小图
+        one_of_problem = problem_images[0][0];//取分割后图片的第一张小图
         /**
          * 处理黑白块
          */
